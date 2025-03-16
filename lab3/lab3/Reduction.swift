@@ -20,7 +20,7 @@ class ReductionBarrier {
             for _ in 1..<totalThreads {
                 semaphore.signal()
             }
-            count = 0 // Сбрасываем для повторного использования
+            count = 0
         } else {
             semaphore.wait()
         }
@@ -34,7 +34,7 @@ enum ReductionOperation {
 
 func parallelReduce(array: [Float], operation: ReductionOperation, maxThreads: Int) -> Float {
     let barrier = ReductionBarrier(threadCount: maxThreads)
-    let chunkSize = (array.count + maxThreads - 1) / maxThreads // Разделяем массив на куски
+    let chunkSize = (array.count + maxThreads - 1) / maxThreads // Разделение массива на куски
     var partialResults = Array(repeating: (operation == .sum ? 0.0 : 1.0), count: maxThreads)
     
     let queue = DispatchQueue.global(qos: .userInitiated)
@@ -56,15 +56,14 @@ func parallelReduce(array: [Float], operation: ReductionOperation, maxThreads: I
             
             print("🔹 Поток \(threadIndex) вычислил: \(partialResults[threadIndex])")
             
-            barrier.wait() // Ждем все потоки
+            barrier.wait()
             
             group.leave()
         }
     }
     
-    group.wait() // Ожидаем завершения всех потоков
+    group.wait()
     
-    // Финальное объединение
     let result = (operation == .sum) ? partialResults.reduce(0, +) : partialResults.reduce(1, *)
     
     return Float(result)

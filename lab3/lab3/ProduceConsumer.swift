@@ -34,26 +34,24 @@ class ProducerConsumerQueue<T> {
 }
 
 func task2() {
-    // Создаем очередь с буфером на 5 элементов
     let queue = ProducerConsumerQueue<Int>(size: 5)
 
-    // Запускаем производителей
+    // Запуск производителей
     DispatchQueue.global(qos: .background).async {
         for i in 1...10 {
             queue.produce(i)
-            usleep(500_000) // Задержка для наглядности
+            usleep(500_000)
         }
     }
 
-    // Запускаем потребителей
+    // Запуск потребителей
     DispatchQueue.global(qos: .background).async {
         for _ in 1...10 {
             _ = queue.consume()
-            usleep(800_000) // Задержка для наглядности
+            usleep(800_000)
         }
     }
 
-    // Даем программе время на выполнение
     sleep(10)
 }
 

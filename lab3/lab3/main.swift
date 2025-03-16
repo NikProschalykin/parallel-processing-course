@@ -4,5 +4,5 @@ import Foundation
 //task3()
 //task4()
 //task5()
-task6()
+//task6()
 RunLoop.main.run()
